@@ -1,9 +1,9 @@
 const db = require("../connection");
 const fs = require("fs");
 
-const userQuery = () => {
+const userQuery = (inputString) => {
   return db
-    .query("SELECT username FROM users")
+    .query(inputString)
     .then((output) => {
       stringInput = JSON.stringify(output.rows, null, 2);
       fs.writeFile("user-query-output.txt", stringInput, (err) => {
@@ -37,9 +37,9 @@ const articleQuery = () => {
     });
 };
 
-const commentQuery = () => {
+const commentQuery = (inputString) => {
     return db
-      .query(`SELECT author, body, votes FROM comments WHERE votes = 0`)
+      .query(inputString)
       .then((output) => {
         stringInput = JSON.stringify(output.rows, null, 2);
         fs.writeFile("comment-query-output.txt", stringInput, (err) => {
@@ -110,9 +110,9 @@ const commentQuery = () => {
       });
   };
 
-// userQuery();
+// userQuery("SELECT * FROM users");
 // articleQuery();
-// commentQuery();
+commentQuery(`SELECT author, body, votes FROM comments WHERE votes < 0`);
 // topicQuery();
 // articleQuery2();
-commentQuery2();
+// commentQuery2();

@@ -1,0 +1,118 @@
+const db = require("../connection");
+const fs = require("fs");
+
+const userQuery = () => {
+  return db
+    .query("SELECT username FROM users")
+    .then((output) => {
+      stringInput = JSON.stringify(output.rows, null, 2);
+      fs.writeFile("user-query-output.txt", stringInput, (err) => {
+        if (err) {
+          console.log("There was an ERROR!");
+        } else {
+          console.log("The file was written successfully!");
+        }
+      });
+    })
+    .then(() => {
+      db.end();
+    });
+};
+
+const articleQuery = () => {
+  return db
+    .query(`SELECT * FROM articles WHERE topic = 'coding'`)
+    .then((output) => {
+      stringInput = JSON.stringify(output.rows, null, 2);
+      fs.writeFile("article-query-output.txt", stringInput, (err) => {
+        if (err) {
+          console.log("There was an ERROR!");
+        } else {
+          console.log("The file was written successfully!");
+        }
+      });
+    })
+    .then(() => {
+      db.end();
+    });
+};
+
+const commentQuery = () => {
+    return db
+      .query(`SELECT author, body, votes FROM comments WHERE votes = 0`)
+      .then((output) => {
+        stringInput = JSON.stringify(output.rows, null, 2);
+        fs.writeFile("comment-query-output.txt", stringInput, (err) => {
+          if (err) {
+            console.log("There was an ERROR!");
+          } else {
+            console.log("The file was written successfully!");
+          }
+        });
+      })
+      .then(() => {
+        db.end();
+      });
+  };
+
+  const topicQuery = () => {
+    return db
+      .query(`SELECT slug FROM topics`)
+      .then((output) => {
+        const createTopicArray = output.rows.map(row => row.slug)
+        stringInput = JSON.stringify(createTopicArray, null, 2);
+        fs.writeFile("topic-query-output.txt", stringInput, (err) => {
+          if (err) {
+            console.log("There was an ERROR!");
+          } else {
+            console.log("The file was written successfully!");
+          }
+        });
+      })
+      .then(() => {
+        db.end();
+      });
+  };
+
+  const articleQuery2 = () => {
+    return db
+      .query(`SELECT * FROM articles WHERE author = 'grumpy19'`)
+      .then((output) => {
+        stringInput = JSON.stringify(output.rows, null, 2);
+        fs.writeFile("article-query-2-output.txt", stringInput, (err) => {
+          if (err) {
+            console.log("There was an ERROR!");
+          } else {
+            console.log("The file was written successfully!");
+          }
+        });
+      })
+      .then(() => {
+        db.end();
+      });
+  };
+
+  const commentQuery2 = () => {
+    return db
+      .query(`SELECT * FROM comments WHERE votes > 10`)
+      .then((output) => {
+        stringInput = JSON.stringify(output.rows, null, 2);
+        fs.writeFile("comment-query-2-output.txt", stringInput, (err) => {
+          if (err) {
+            console.log("There was an ERROR!");
+          } else {
+            console.log("The file was written successfully!");
+          }
+        });
+      })
+      .then(() => {
+        db.end();
+      });
+  };
+
+// userQuery();
+// articleQuery();
+// commentQuery();
+// topicQuery();
+// articleQuery2();
+commentQuery2();

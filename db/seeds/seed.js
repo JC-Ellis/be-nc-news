@@ -28,11 +28,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     })
     .then(() => {
       const formattedTopicData = topicData.map((valueOf) => {
-        return [
-          valueOf.slug, 
-          valueOf.description, 
-          valueOf.img_url
-        ];
+        return [valueOf.slug, valueOf.description, valueOf.img_url];
       });
       const insertTopicData = format(
         `
@@ -46,11 +42,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     })
     .then(() => {
       const formattedUsersData = userData.map((valueOf) => {
-        return [
-          valueOf.username, 
-          valueOf.name, 
-          valueOf.avatar_url
-        ];
+        return [valueOf.username, valueOf.name, valueOf.avatar_url];
       });
       const insertUsersData = format(
         `
@@ -68,13 +60,13 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         const articleDateFormat = convertTimestampToDate(valueOf);
         // console.log(articleDateFormat)
         return [
-          articleDateFormat.title, 
-          articleDateFormat.topic, 
-          articleDateFormat.author, 
-          articleDateFormat.body, 
-          articleDateFormat.created_at, 
-          articleDateFormat.votes, 
-          articleDateFormat.article_img_url
+          articleDateFormat.title,
+          articleDateFormat.topic,
+          articleDateFormat.author,
+          articleDateFormat.body,
+          articleDateFormat.created_at,
+          articleDateFormat.votes,
+          articleDateFormat.article_img_url,
         ];
       });
       const insertArticleData = format(
@@ -90,9 +82,12 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then((response) => {
       // console.log('response.rows >>>', response.rows)
       const dataFromArticle = response.rows;
+
       const articleIdRef = createReferenceObject(
-        dataFromArticle, 'title', 'article_id'
-      )
+        dataFromArticle,
+        "title",
+        "article_id"
+      );
       // console.log('articleIDRef', articleIdRef);
       const formattedCommentData = commentData.map((valueOf) => {
         const commentDateFormat = convertTimestampToDate(valueOf);
@@ -114,7 +109,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       );
       return db.query(insertUsersData);
     });
-
 };
 
 function createTopics() {

@@ -110,9 +110,27 @@ const commentQuery = (inputString) => {
       });
   };
 
+  const checkDB = (inputString) => {
+    return db
+      .query(inputString)
+      .then((output) => {
+        stringInput = JSON.stringify(output.rows, null, 2);
+        fs.writeFile("check-DB.txt", stringInput, (err) => {
+          if (err) {
+            console.log("There was an ERROR!");
+          } else {
+            console.log("The file was written successfully!");
+          }
+        });
+      })
+      .then(() => {
+        db.end();
+      });
+  };
 // userQuery("SELECT * FROM users");
 // articleQuery();
-commentQuery(`SELECT author, body, votes FROM comments WHERE votes < 0`);
+// commentQuery(`SELECT author, body, votes FROM comments WHERE votes < 0`);
 // topicQuery();
 // articleQuery2();
 // commentQuery2();
+checkDB('SELECT * FROM articles')

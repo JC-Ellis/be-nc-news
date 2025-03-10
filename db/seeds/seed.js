@@ -55,10 +55,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(insertUsersData);
     })
     .then(() => {
-      // console.log(articleData)
       const formattedArticleData = articleData.map((valueOf) => {
         const articleDateFormat = convertTimestampToDate(valueOf);
-        // console.log(articleDateFormat)
         return [
           articleDateFormat.title,
           articleDateFormat.topic,

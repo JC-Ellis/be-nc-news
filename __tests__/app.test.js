@@ -7,9 +7,6 @@ const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 
-//jest-sorted perhaps
-
-/* Set up your beforeEach & afterAll functions here */
 beforeEach(() => {
   return seed(data);
 });
@@ -19,7 +16,7 @@ afterAll(() => {
 });
 
 describe("GET /api", () => {
-  test("200: Responds with an object detailing the documentation for each endpoint", () => {
+  test("200: responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -30,13 +27,14 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/topics", () => {
-  test("200: Responds with an array of all topics, with the properties of: slug, description", () => {
+  test("200: responds with an array of all topics, with the properties of: slug, description", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
         const topics = body.topics;
         expect(topics.length).toBe(3);
+        expect(topics).toBeInstanceOf(Array);
         topics.forEach((topicVal) => {
           expect(typeof topicVal.slug).toBe("string");
           expect(typeof topicVal.description).toBe("string");
@@ -49,6 +47,29 @@ describe("GET /api/topics", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("path not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: responds with a single article object matching the passed in article id number", () => {
+    return request(app)
+      .get("/api/articles/4")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.articles;
+        expect(article.article_id).toBe(4);
+        expect(article.author).toBe("rogersop");
+        expect(article.title).toBe("Student SUES Mitch!");
+        expect(article.body).toBe(
+          "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages"
+        );
+        expect(article.topic).toBe("mitch");
+        expect(article.created_at).toBe("2020-05-06T01:14:00.000Z");
+        expect(article.votes).toBe(0);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
       });
   });
 });

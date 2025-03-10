@@ -1,8 +1,6 @@
-// supertest, app and endpoints
 const endpointsJson = require("../endpoints.json");
 const request = require("supertest");
 const app = require("../app");
-// seed, databases and data
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
@@ -26,6 +24,17 @@ describe("GET /api", () => {
   });
 });
 
+describe("Error handling", () => {
+  test("404: responds with a 404 error if the user enters a wrong address", () => {
+    return request(app)
+      .get("/apr")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
+  });
+});
+
 describe("GET /api/topics", () => {
   test("200: responds with an array of all topics, with the properties of: slug, description", () => {
     return request(app)
@@ -39,14 +48,6 @@ describe("GET /api/topics", () => {
           expect(typeof topicVal.slug).toBe("string");
           expect(typeof topicVal.description).toBe("string");
         });
-      });
-  });
-  test("404: responds with a 404 error if the user enters a wrong address", () => {
-    return request(app)
-      .get("/api/topic")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
       });
   });
 });
@@ -70,6 +71,22 @@ describe("GET /api/articles/:article_id", () => {
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+      });
+  });
+  test("404: responds with not found if article_id doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/999999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("400: responds with bad request if passed in article_id is not a number", () => {
+    return request(app)
+      .get("/api/articles/thatoneplease")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });

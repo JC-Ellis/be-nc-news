@@ -9,7 +9,7 @@ const app = require('../app')
 /* Set up your beforeEach & afterAll functions here */
 
 describe("GET /api", () => {
-  test.skip("200: Responds with an object detailing the documentation for each endpoint", () => {
+  test("200: Responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
       .get("/api")
       .expect(200)

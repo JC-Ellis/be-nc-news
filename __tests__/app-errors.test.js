@@ -73,13 +73,53 @@ describe("ERROR: api/articles/:article_id/comments", () => {
     test("404: responds with not found if article_id doesn't exist", () => {
         const newComment = {
             username: "lurker",
+            body: "So, where's the article?"
+          }
+      return request(app)
+        .post("/api/articles/999999/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article or username not found");
+        });
+    });
+    test("404: responds with not found if username doesn't exist", () => {
+        const newComment = {
+            username: "grandalf_the_tired",
             body: "You shall not parse!"
           }
       return request(app)
-        .get("/api/articles/999999/comments")
+        .post("/api/articles/2/comments")
+        .send(newComment)
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("not found");
+          expect(body.msg).toBe("article or username not found");
         });
     });
+    test("400: responds with bad request if passed in article_id is not a number", () => {
+        const newComment = {
+            username: "lurker",
+            body: "At least it's not banana"
+          }
+      return request(app)
+        .post("/api/articles/whyeven/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: responds with not found if username doesn't exist", () => {
+        const newComment = {
+            username: "lurker",
+            body: ""
+          }
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing required fields: comment");
+        });
   });
+})

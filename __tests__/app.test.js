@@ -74,7 +74,6 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(13);
-        expect(articles).toBeInstanceOf(Array);
         articles.forEach((articleVal) => {
           expect(typeof articleVal.author).toBe("string");
           expect(typeof articleVal.title).toBe("string");
@@ -130,7 +129,7 @@ describe("POST api/articles/:article_id/comments", () => {
   test("201: responds with the posted comment", () => {
     const newComment = {
       username: "lurker",
-      body: "You shall not parse!"
+      body: "What an interesting article"
     }
     return request(app)
     .post('/api/articles/3/comments')
@@ -138,9 +137,8 @@ describe("POST api/articles/:article_id/comments", () => {
     .expect(201)
     .then(({body}) => {
       const comment = body.comment;
-      console.log(comment)
       expect(comment.article_id).toBe(3)
-      expect(comment.body).toBe('You shall not parse!')
+      expect(comment.body).toBe('What an interesting article')
       expect(comment.author).toBe('lurker')
       expect(typeof comment.comment_id).toBe('number')
       expect(typeof comment.votes).toBe('number')

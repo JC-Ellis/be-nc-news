@@ -15,7 +15,7 @@ const { getCommentsByArticleId, postCommentByArticleId } = require("./controller
 const {
     handleServerErrors,
     handleCustomErrors,
-  handlePsqlErrors,
+  handlePsqlErrors, handlePostErrors
 } = require("./controllers/errors.controllers");
 
 app.get("/api", (req, res) => {
@@ -36,6 +36,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId)
 app.use(handleCustomErrors);
 
 app.use(handlePsqlErrors);
+
+app.use(handlePostErrors);
 
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "path not found" });

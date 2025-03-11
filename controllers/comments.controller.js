@@ -1,14 +1,23 @@
 const {
-    fetchCommentsByArticleId
-  } = require("../models/comments.models");
+  fetchCommentsByArticleId,
+  addCommentByArticleId,
+} = require("../models/comments.models");
 
-  exports.getCommentsByArticleId = (req, res, next) => {
-    const article_id = req.params.article_id;
-    fetchCommentsByArticleId(article_id)
-      .then((comments) => {
-        res.status(200).send({ comments });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  };
+exports.getCommentsByArticleId = (req, res, next) => {
+  const article_id = req.params.article_id;
+  fetchCommentsByArticleId(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postCommentByArticleId = (req, res, next) => {
+  const article_id = req.params.article_id;
+  const { username, body } = req.body;
+  addCommentByArticleId(article_id, username, body).then((comment) => {
+    res.status(201).send({ comment });
+  });
+};

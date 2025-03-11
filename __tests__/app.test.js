@@ -122,7 +122,6 @@ describe("GET api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const comments = body.comments;
-        console.log(comments)
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });

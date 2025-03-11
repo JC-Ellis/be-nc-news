@@ -5,6 +5,7 @@ const app = require("../app");
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
+const supertest = require("supertest");
 
 beforeEach(() => {
   return seed(data);
@@ -93,6 +94,36 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments, matching the given article id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        comments.forEach((commentVal) => {
+          expect(commentVal.article_id).toBe(3);
+          expect(typeof commentVal.comment_id).toBe("number");
+          expect(typeof commentVal.votes).toBe("number");
+          expect(typeof commentVal.body).toBe("string");
+          expect(typeof commentVal.created_at).toBe("string");
+          expect(typeof commentVal.author).toBe("string");
+          expect(typeof commentVal.article_id).toBe("number");
+        });
+      });
+  });
+  test("200: responds with an array of comments sorted by most recent comment, matching the given article id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        console.log(comments)
+        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
 });

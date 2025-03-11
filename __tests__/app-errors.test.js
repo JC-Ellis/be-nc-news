@@ -41,3 +41,31 @@ describe("ERROR: /api/articles", () => {
       });
   });
 });
+
+describe("GET api/articles/:article_id/comments", () => {
+  test("404: responds with not found if article_id doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/999999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("404: responds with not found if chosen article doesn't have any comments", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("400: responds with bad request if passed in article_id is not a number", () => {
+      return request(app)
+        .get("/api/articles/whatsmitchdoinghere/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+});
+

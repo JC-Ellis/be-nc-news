@@ -156,3 +156,43 @@ describe("POST api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("PATCH api/articles/:article_id", () => {
+  test("200: responds with an article matching the given article id, updated with a new vote count when given a positive integer", () => {
+    const newVotes = {
+      inc_votes: 9,
+    };
+    return request(app)
+      .patch("/api/articles/6")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(9);
+        expect(article.article_id).toBe(6);
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("A");
+        expect(article.topic).toBe("mitch");
+        expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
+        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+      });
+  });
+  test("200: responds with an article matching the given article id, updated with a new vote count when given a negative integer", () => {
+    const newVotes = {
+      inc_votes: -85,
+    };
+    return request(app)
+      .patch("/api/articles/6")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(-85);
+        expect(article.article_id).toBe(6);
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("A");
+        expect(article.topic).toBe("mitch");
+        expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
+        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+      });
+  });
+});

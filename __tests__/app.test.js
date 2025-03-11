@@ -35,9 +35,9 @@ describe("GET /api/topics", () => {
         const topics = body.topics;
         expect(topics.length).toBe(3);
         expect(topics).toBeInstanceOf(Array);
-        topics.forEach((topicVal) => {
-          expect(typeof topicVal.slug).toBe("string");
-          expect(typeof topicVal.description).toBe("string");
+        topics.forEach((topic) => {
+          expect(typeof topic.slug).toBe("string");
+          expect(typeof topic.description).toBe("string");
         });
       });
   });
@@ -74,15 +74,15 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(13);
-        articles.forEach((articleVal) => {
-          expect(typeof articleVal.author).toBe("string");
-          expect(typeof articleVal.title).toBe("string");
-          expect(typeof articleVal.article_id).toBe("number");
-          expect(typeof articleVal.topic).toBe("string");
-          expect(typeof articleVal.created_at).toBe("string");
-          expect(typeof articleVal.votes).toBe("number");
-          expect(typeof articleVal.article_img_url).toBe("string");
-          expect(typeof articleVal.comment_count).toBe("string");
+        articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("string");
         });
       });
   });
@@ -104,14 +104,14 @@ describe("GET api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const comments = body.comments;
-        comments.forEach((commentVal) => {
-          expect(commentVal.article_id).toBe(3);
-          expect(typeof commentVal.comment_id).toBe("number");
-          expect(typeof commentVal.votes).toBe("number");
-          expect(typeof commentVal.body).toBe("string");
-          expect(typeof commentVal.created_at).toBe("string");
-          expect(typeof commentVal.author).toBe("string");
-          expect(typeof commentVal.article_id).toBe("number");
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(3);
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
         });
       });
   });
@@ -124,25 +124,35 @@ describe("GET api/articles/:article_id/comments", () => {
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("200: Responds with an empty array if there are no comments for a valid article_id.", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments.length).toBe(0);
+      });
+  });
 });
 describe("POST api/articles/:article_id/comments", () => {
   test("201: responds with the posted comment", () => {
     const newComment = {
       username: "lurker",
-      body: "What an interesting article"
-    }
+      body: "What an interesting article",
+    };
     return request(app)
-    .post('/api/articles/3/comments')
-    .send(newComment)
-    .expect(201)
-    .then(({body}) => {
-      const comment = body.comment;
-      expect(comment.article_id).toBe(3)
-      expect(comment.body).toBe('What an interesting article')
-      expect(comment.author).toBe('lurker')
-      expect(typeof comment.comment_id).toBe('number')
-      expect(typeof comment.votes).toBe('number')
-      expect(typeof comment.created_at).toBe('string')
-    })
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.article_id).toBe(3);
+        expect(comment.body).toBe("What an interesting article");
+        expect(comment.author).toBe("lurker");
+        expect(typeof comment.comment_id).toBe("number");
+        expect(typeof comment.votes).toBe("number");
+        expect(typeof comment.created_at).toBe("string");
+      });
   });
 });

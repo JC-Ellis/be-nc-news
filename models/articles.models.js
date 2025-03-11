@@ -1,9 +1,13 @@
 const db = require("../db/connection");
 
 exports.fetchAllArticles = () => {
-  return db.query('SELECT articles.article_id, articles.title, articles.author, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC').then(({ rows }) => {
-    return rows;
-  });
+  return db
+    .query(
+      "SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) AS comment_count FROM articles a LEFT JOIN comments c ON a.article_id = c.article_id GROUP BY a.article_id ORDER BY a.created_at DESC"
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
 };
 
 exports.fetchArticleById = (article_id) => {

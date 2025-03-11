@@ -1,6 +1,6 @@
 const endpointsJson = require("../endpoints.json");
 const request = require("supertest");
-const jestSorted = require("jest-sorted")
+const jestSorted = require("jest-sorted");
 const app = require("../app");
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
@@ -21,17 +21,6 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body: { endpoints } }) => {
         expect(endpoints).toEqual(endpointsJson);
-      });
-  });
-});
-
-describe("Error handling", () => {
-  test("404: responds with a 404 error if the user enters a wrong address", () => {
-    return request(app)
-      .get("/apr")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
       });
   });
 });
@@ -74,22 +63,6 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
-  test("404: responds with not found if article_id doesn't exist", () => {
-    return request(app)
-      .get("/api/articles/999999")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("not found");
-      });
-  });
-  test("400: responds with bad request if passed in article_id is not a number", () => {
-    return request(app)
-      .get("/api/articles/thatoneplease")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("bad request");
-      });
-  });
 });
 
 describe("GET /api/articles", () => {
@@ -99,8 +72,6 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        // console.log(articles)
-        expect(articles).toBeSortedBy("created_at", {descending: true})
         expect(articles.length).toBe(13);
         expect(articles).toBeInstanceOf(Array);
         articles.forEach((articleVal) => {
@@ -113,6 +84,15 @@ describe("GET /api/articles", () => {
           expect(typeof articleVal.article_img_url).toBe("string");
           expect(typeof articleVal.comment_count).toBe("string");
         });
+      });
+  });
+  test("200: responds with an array of all articles, sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });

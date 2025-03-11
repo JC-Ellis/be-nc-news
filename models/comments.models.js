@@ -12,6 +12,12 @@ exports.fetchCommentsByArticleId = (article_id) => {
 };
 
 exports.addCommentByArticleId = (article_id, username, body) => {
+    if (!body || !username) {
+        return Promise.reject({
+          status: 400,
+          msg: "Missing required fields: comment or username",
+        });
+      }
   return db
     .query(
       `INSERT INTO comments (article_id, body, votes, author, created_at)

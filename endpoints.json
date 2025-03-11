@@ -63,7 +63,7 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "adds a comment to the article matching the passed in article id",
-    "queries": ["{username: string, body: string}"],
+    "exampleBody": {"username": "string", "body": "string"},
     "exampleResponse": {
       "comment": [
         {

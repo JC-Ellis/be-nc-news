@@ -69,3 +69,17 @@ describe("ERROR: api/articles/:article_id/comments", () => {
     });
 });
 
+describe("ERROR: api/articles/:article_id/comments", () => {
+    test("404: responds with not found if article_id doesn't exist", () => {
+        const newComment = {
+            username: "lurker",
+            body: "You shall not parse!"
+          }
+      return request(app)
+        .get("/api/articles/999999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+  });

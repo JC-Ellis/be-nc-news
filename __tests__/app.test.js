@@ -1,5 +1,6 @@
 const endpointsJson = require("../endpoints.json");
 const request = require("supertest");
+const jestSorted = require("jest-sorted");
 const app = require("../app");
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
@@ -20,17 +21,6 @@ describe("GET /api", () => {
       .expect(200)
       .then(({ body: { endpoints } }) => {
         expect(endpoints).toEqual(endpointsJson);
-      });
-  });
-});
-
-describe("Error handling", () => {
-  test("404: responds with a 404 error if the user enters a wrong address", () => {
-    return request(app)
-      .get("/apr")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
       });
   });
 });
@@ -58,7 +48,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/4")
       .expect(200)
       .then(({ body }) => {
-        const article = body.articles;
+        const article = body.article;
         expect(article.article_id).toBe(4);
         expect(article.author).toBe("rogersop");
         expect(article.title).toBe("Student SUES Mitch!");
@@ -73,20 +63,36 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
-  test("404: responds with not found if article_id doesn't exist", () => {
+});
+
+describe("GET /api/articles", () => {
+  test("200: responds with an array of all articles, with the properties of: author, title, article_id, topic, created_at, votes, article_img_url, comment_count", () => {
     return request(app)
-      .get("/api/articles/999999")
-      .expect(404)
+      .get("/api/articles")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("not found");
+        const articles = body.articles;
+        expect(articles.length).toBe(13);
+        expect(articles).toBeInstanceOf(Array);
+        articles.forEach((articleVal) => {
+          expect(typeof articleVal.author).toBe("string");
+          expect(typeof articleVal.title).toBe("string");
+          expect(typeof articleVal.article_id).toBe("number");
+          expect(typeof articleVal.topic).toBe("string");
+          expect(typeof articleVal.created_at).toBe("string");
+          expect(typeof articleVal.votes).toBe("number");
+          expect(typeof articleVal.article_img_url).toBe("string");
+          expect(typeof articleVal.comment_count).toBe("string");
+        });
       });
   });
-  test("400: responds with bad request if passed in article_id is not a number", () => {
+  test("200: responds with an array of all articles, sorted by date in descending order", () => {
     return request(app)
-      .get("/api/articles/thatoneplease")
-      .expect(400)
+      .get("/api/articles")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("bad request");
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });

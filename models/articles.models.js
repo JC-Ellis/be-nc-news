@@ -1,8 +1,9 @@
-const { all } = require("../app");
 const db = require("../db/connection");
 
 exports.fetchAllArticles = (sortBy, orderBy) => {
-  const allowedInputs = ["title", "author", "votes", "created_at", "asc", "desc"];
+  const allowedSortInputs = ["title", "author", "votes", "created_at"];
+  const allowedOrderInputs = ["ASC", "DESC"];
+
   let queryString = `
     SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
       COUNT(c.comment_id) 
@@ -15,22 +16,29 @@ exports.fetchAllArticles = (sortBy, orderBy) => {
   let order = [];
 
   if (sortBy) {
-      binders.push(sortBy);
-      queryString += `ORDER BY a.${binders} `;
-    } else {queryString += `ORDER BY a.created_at `}
-    if (orderBy) {
-        order.push(orderBy)
-        queryString += `${order}`
-    } else {queryString += `DESC`}
-    console.log(queryString)
+    if (!allowedSortInputs.includes(sortBy)) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    binders.push(sortBy);
+    queryString += `ORDER BY a.${binders} `;
+  } else {
+    queryString += `ORDER BY a.created_at `;
+  }
 
-    return db.query(queryString).then(({ rows }) => {
-        return rows;
-    });
+  if (orderBy) {
+    if (!allowedOrderInputs.includes(orderBy.toUpperCase())) {
+      return Promise.reject({ status: 400, msg: "bad request" });
+    }
+    order.push(orderBy.toUpperCase());
+    queryString += `${order}`;
+  } else {
+    queryString += `DESC`;
+  }
+
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
 };
-// if (!allowedInputs.includes(sortBy)) {
-//     return Promise.reject({ status: 404, msg: "invalid input" });
-// }
 
 exports.fetchArticleById = (article_id) => {
   return db

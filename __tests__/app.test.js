@@ -5,7 +5,6 @@ const app = require("../app");
 const data = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
-const supertest = require("supertest");
 
 beforeEach(() => {
   return seed(data);
@@ -34,7 +33,6 @@ describe("GET /api/topics", () => {
       .then(({ body }) => {
         const topics = body.topics;
         expect(topics.length).toBe(3);
-        expect(topics).toBeInstanceOf(Array);
         topics.forEach((topic) => {
           expect(typeof topic.slug).toBe("string");
           expect(typeof topic.description).toBe("string");
@@ -173,7 +171,9 @@ describe("PATCH api/articles/:article_id", () => {
         expect(article.title).toBe("A");
         expect(article.topic).toBe("mitch");
         expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
-        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
       });
   });
   test("200: responds with an article matching the given article id, updated with a new vote count when given a negative integer", () => {
@@ -192,7 +192,9 @@ describe("PATCH api/articles/:article_id", () => {
         expect(article.title).toBe("A");
         expect(article.topic).toBe("mitch");
         expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
-        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
       });
   });
 });
@@ -201,8 +203,24 @@ describe("DELETE api/comments/:comment_id", () => {
     return request(app)
       .delete("/api/comments/6")
       .expect(204)
-      .then(({ body } ) => {
+      .then(({ body }) => {
         expect(body).toEqual({});
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("200: responds with an array of all users, with the properties of: username, name, avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
       });
   });
 });

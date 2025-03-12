@@ -1,21 +1,36 @@
+const { all } = require("../app");
 const db = require("../db/connection");
 
-exports.fetchAllArticles = () => {
-  return db
-    .query(
-      `SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
+exports.fetchAllArticles = (sortBy, orderBy) => {
+  const allowedInputs = ["title", "author", "votes", "created_at", "asc", "desc"];
+  let queryString = `
+    SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
       COUNT(c.comment_id) 
       AS comment_count 
       FROM articles a 
       LEFT JOIN comments c 
       ON a.article_id = c.article_id 
-      GROUP BY a.article_id 
-      ORDER BY a.created_at DESC`
-    )
-    .then(({ rows }) => {
-      return rows;
+      GROUP BY a.article_id `;
+  let binders = [];
+  let order = [];
+
+  if (sortBy) {
+      binders.push(sortBy);
+      queryString += `ORDER BY a.${binders} `;
+    } else {queryString += `ORDER BY a.created_at `}
+    if (orderBy) {
+        order.push(orderBy)
+        queryString += `${order}`
+    } else {queryString += `DESC`}
+    console.log(queryString)
+
+    return db.query(queryString).then(({ rows }) => {
+        return rows;
     });
 };
+// if (!allowedInputs.includes(sortBy)) {
+//     return Promise.reject({ status: 404, msg: "invalid input" });
+// }
 
 exports.fetchArticleById = (article_id) => {
   return db

@@ -196,3 +196,13 @@ describe("PATCH api/articles/:article_id", () => {
       });
   });
 });
+describe("DELETE api/comments/:comment_id", () => {
+  test("204: deletes comment based on chosen comment id, and responds with a message confirming what has been deleted", () => {
+    return request(app)
+      .delete("/api/comments/6")
+      .expect(204)
+      .then(({ body } ) => {
+        expect(body).toEqual({});
+      });
+  });
+});

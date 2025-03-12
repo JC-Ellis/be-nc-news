@@ -17,6 +17,8 @@ const {
   deleteCommentByCommentId,
 } = require("./controllers/comments.controller");
 
+const { getAllUsers } = require("./controllers/users.controller")
+
 const {
   handleServerErrors,
   handleCustomErrors,
@@ -41,6 +43,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.delete("/api/comments/:comment_id", deleteCommentByCommentId)
+
+app.get("/api/users", getAllUsers)
 
 app.use(handleCustomErrors);
 

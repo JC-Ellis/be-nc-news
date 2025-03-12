@@ -154,3 +154,21 @@ describe("PATCH ERROR: api/articles/:article_id/", () => {
         });
     });
 });
+describe("DELETE ERROR: api/comments/:comment_id", () => {
+    test("404: responds with not found if comment_id doesn't exist", () => {
+      return request(app)
+        .delete("/api/comments/999999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+    test("400: responds with bad request if passed in comment_id is not a number", () => {
+      return request(app)
+        .delete("/api/comments/heseverywhere")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });

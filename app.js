@@ -1,26 +1,31 @@
 const express = require("express");
 const app = express();
 const endpoints = require("./endpoints.json");
-app.use(express.json())
+app.use(express.json());
 
 const { getAllTopics } = require("./controllers/topics.controller");
 
 const {
-    getArticleById,
-    getAllArticles,
-    patchArticleVotes,
+  getArticleById,
+  getAllArticles,
+  patchArticleVotes,
 } = require("./controllers/articles.controller");
 
-const { getCommentsByArticleId, postCommentByArticleId } = require("./controllers/comments.controller")
+const {
+  getCommentsByArticleId,
+  postCommentByArticleId,
+  deleteCommentByCommentId,
+} = require("./controllers/comments.controller");
 
 const {
-    handleServerErrors,
-    handleCustomErrors,
-  handlePsqlErrors, handlePostErrors
+  handleServerErrors,
+  handleCustomErrors,
+  handlePsqlErrors,
+  handlePostErrors,
 } = require("./controllers/errors.controllers");
 
 app.get("/api", (req, res) => {
-    res.status(200).send({ endpoints });
+  res.status(200).send({ endpoints });
 });
 
 app.get("/api/topics", getAllTopics);
@@ -29,12 +34,13 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id", getArticleById);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
-app.post("/api/articles/:article_id/comments", postCommentByArticleId)
+app.patch("/api/articles/:article_id", patchArticleVotes);
 
-app.patch("/api/articles/:article_id", patchArticleVotes)
+app.delete("/api/comments/:comment_id", deleteCommentByCommentId)
 
 app.use(handleCustomErrors);
 

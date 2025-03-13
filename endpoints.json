@@ -10,8 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles sorted by date, and in descending order by default",
-    "queries": ["?sort_by=VALUE", "?order=VALUES"],
+    "description": "serves an array of all articles sorted by date, and in descending order by default, additionally can take a topic value and filter article by topic",
+    "queries": ["?sort_by=VALUE", "?order=VALUES", "?topic=VALUE"],
     "exampleResponse": {
       "articles": [
         {
@@ -28,7 +28,7 @@
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "serves an array of all articles matching the passed in article id",
+    "description": "serves a single article matching the passed in article id",
     "queries": ["Int"],
     "exampleResponse": {
       "articles": [
@@ -46,7 +46,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "serves an array of all articles matching the passed in article id",
+    "description": "updates the vote count of an article matching the passed in article id",
     "queries": ["Int"],
     "exampleBody": { "inc_votes": "Int" },
     "exampleResponse": {
@@ -97,17 +97,19 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "adds a comment to the article matching the passed in article id",
+    "description": "deletes a comment matching the passed in comment id",
     "queries": ["Int"],
     "exampleResponse": {}
   },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
-    "exampleResponse":  {
-      "username": "rogersop",
-      "name": "paul",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-    }
+    "exampleResponse": [
+      {
+        "username": "stacey-dooly-and-the-lockdown-babies",
+        "name": "tony",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    ]
   }
 }

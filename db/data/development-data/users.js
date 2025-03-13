@@ -34,5 +34,17 @@ module.exports = [
     name: 'Jess Jelly',
     avatar_url:
       'https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141'
+  },
+  {
+    username: 'grandalf',
+    name: 'Tommy-Tippie',
+    avatar_url:
+      'https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141'
+  },
+  {
+    username: 'dangerous-dan',
+    name: 'Brian',
+    avatar_url:
+      'https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141'
   }
 ];

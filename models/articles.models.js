@@ -34,14 +34,12 @@ exports.fetchAllArticles = (sortBy, orderBy, topic) => {
   } else {
     queryString += `DESC`;
   }
-  console.log(queryString);
   return db.query(queryString, filterBy).then(({ rows }) => {
     return rows;
   });
 };
 
 exports.fetchArticleById = (article_id) => {
-  console.log(article_id);
   return db
     .query(`
         SELECT a.*, 
@@ -55,7 +53,6 @@ exports.fetchArticleById = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      console.log(rows);
       if (!rows.length) {
         return Promise.reject({ status: 404, msg: "not found" });
       }

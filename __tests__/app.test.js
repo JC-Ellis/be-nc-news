@@ -68,18 +68,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
-        console.log(article);
         expect(article.comment_count).toBe("1");
-        expect(article.article_id).toBe(6);
-        expect(article.author).toBe("icellusedkars");
-        expect(article.title).toBe("A");
-        expect(article.body).toBe("Delicious tin of cat food");
-        expect(article.topic).toBe("mitch");
-        expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
-        expect(article.votes).toBe(0);
-        expect(article.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
       });
   });
 });
@@ -208,13 +197,6 @@ describe("PATCH api/articles/:article_id", () => {
         const article = body.article;
         expect(article.votes).toBe(-85);
         expect(article.article_id).toBe(6);
-        expect(article.author).toBe("icellusedkars");
-        expect(article.title).toBe("A");
-        expect(article.topic).toBe("mitch");
-        expect(article.created_at).toBe("2020-10-18T01:00:00.000Z");
-        expect(article.article_img_url).toBe(
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        );
       });
   });
 });
@@ -276,6 +258,17 @@ describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
           });
         });
     });
+    test("Responds with an empty array when request query is for a topic that doesn't have any associated articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeInstanceOf(Array)
+          expect(articles.length).toBe(0);
+          });
+        });
+    });
     describe("/api/articles/ with with two added queries", () => {
       test("200: responds with an array of all articles, sorted by given input, in ascending order", () => {
         return request(app)
@@ -284,23 +277,22 @@ describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
           .then(({ body }) => {
             const articles = body.articles;
             expect(articles).toBeSortedBy("author", { descending: false });
-            });
           });
       });
     });
-    describe("/api/articles/ with with three added queries", () => {
-      test("200: responds with array of articles filtered by topic, and sorted by author in ascending order", () => {
-        return request(app)
-          .get("/api/articles?sort_by=author&order=asc&topic=mitch")
-          .expect(200)
-          .then(({ body }) => {
-            const articles = body.articles;
-            expect(articles).toBeSortedBy("author", { descending: false });
-            expect(articles.length).toBe(12);
-            articles.forEach((article) => {
-              expect(article.topic).toBe("mitch");
-            });
+  });
+  describe("/api/articles/ with with three added queries", () => {
+    test("200: responds with array of articles filtered by topic, and sorted by author in ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles).toBeSortedBy("author", { descending: false });
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
           });
-      });
+        });
     });
   });

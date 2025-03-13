@@ -1,5 +1,11 @@
  # NC News API
 
+ ## Project Summary - News Site API
+ 
+The News Site API is a backend service that provides news articles, topics, user profiles, and comments. It allows users to view articles, post comments, vote on articles, and filter content by topic.
+
+This API is designed to be used with a website or app that needs news-related content. It organizes and manages data efficiently, making it easy to fetch and interact with news articles. 
+
 ## Live Demo
 To see a demo of the project, visit:  
 **[NC News API - Hosted Version](https://be-nc-news-btqn.onrender.com/api/)**
@@ -59,3 +65,8 @@ To start the API locally, run: **npm start**
 | **DELETE** | `/api/comments/:comment_id` | Delete a comment by its ID |
 | **GET** | `/api/users/` | Retrieve a list of all users |
 ---
+
+## To run this project, ensure you have:
+
+### Node.js: v23.1.0
+### PostgreSQL: v16.8

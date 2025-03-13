@@ -154,7 +154,7 @@ describe("PATCH ERROR: api/articles/:article_id/", () => {
       });
   });
 });
-describe("GET ERROR: api/articles?sort_by=VALUE&order=VALUE", () => {
+describe("GET ERROR: api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
   test("400: responds with bad request if sort_by VALUE isn't allowed", () => {
     return request(app)
       .get("/api/articles?sort_by=user_review")
@@ -169,6 +169,14 @@ describe("GET ERROR: api/articles?sort_by=VALUE&order=VALUE", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+  test("404: responds with bad request if topic VALUE doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?topic=motch")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
       });
   });
 });

@@ -3,11 +3,16 @@ const {
   fetchAllArticles,
   updateArticleVotes,
 } = require("../models/articles.models");
+const { checkTopicExists } = require("../models/topics.models");
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  fetchAllArticles(sort_by, order)
-    .then((articles) => res.status(200).send({ articles }))
+  const { sort_by, order, topic } = req.query;
+  const promises = [
+    checkTopicExists(topic),
+    fetchAllArticles(sort_by, order, topic),
+  ];
+  Promise.all(promises)
+    .then(([_, articles]) => res.status(200).send({ articles }))
     .catch((err) => {
       next(err);
     });

@@ -1,28 +1,32 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = (sortBy, orderBy) => {
+exports.fetchAllArticles = (sortBy, orderBy, topic) => {
   const allowedSortInputs = ["title", "author", "votes", "created_at"];
   const allowedOrderInputs = ["ASC", "DESC"];
-
   let queryString = `
-    SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
-      COUNT(c.comment_id) 
-      AS comment_count 
-      FROM articles a 
-      LEFT JOIN comments c 
-      ON a.article_id = c.article_id 
-      GROUP BY a.article_id `;
+  SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
+  COUNT(c.comment_id) 
+  AS comment_count 
+  FROM articles a 
+  LEFT JOIN comments c 
+  ON a.article_id = c.article_id `;
+
+  let filterBy = [];
   let binders = [];
   let order = [];
 
+  if (topic) {
+    filterBy.push(topic);
+    queryString += `WHERE topic = $1 `;
+  }
   if (sortBy) {
     if (!allowedSortInputs.includes(sortBy)) {
       return Promise.reject({ status: 400, msg: "bad request" });
     }
     binders.push(sortBy);
-    queryString += `ORDER BY a.${binders} `;
+    queryString += `GROUP BY a.article_id ORDER BY a.${binders} `;
   } else {
-    queryString += `ORDER BY a.created_at `;
+    queryString += `GROUP BY a.article_id ORDER BY a.created_at `;
   }
 
   if (orderBy) {
@@ -35,7 +39,7 @@ exports.fetchAllArticles = (sortBy, orderBy) => {
     queryString += `DESC`;
   }
 
-  return db.query(queryString).then(({ rows }) => {
+  return db.query(queryString, filterBy).then(({ rows }) => {
     return rows;
   });
 };

@@ -23,7 +23,7 @@ describe("GET ERROR: default error handling", () => {
   });
 });
 
-describe("GET ERROR: /api/articles", () => {
+describe("GET ERROR: /api/articles/:article_id", () => {
   test("404: responds with not found if article_id doesn't exist", () => {
     return request(app)
       .get("/api/articles/999999")
@@ -180,3 +180,13 @@ describe("GET ERROR: api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => 
       });
   });
 });
+describe("GET ERROR: /api/users/:username", () => {
+    test("404: responds with not found if username doesn't exist", () => {
+      return request(app)
+        .get("/api/users/toni-ravioli")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("not found");
+        });
+    });
+})

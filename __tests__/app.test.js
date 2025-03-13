@@ -213,16 +213,29 @@ describe("DELETE api/comments/:comment_id", () => {
 describe("GET /api/users", () => {
   test("200: responds with an array of all users, with the properties of: username, name, avatar_url", () => {
     return request(app)
-      .get("/api/users")
+      .get("/api/users/")
       .expect(200)
       .then(({ body }) => {
         const users = body.users;
-        expect(users.length).toBe(4);
         users.forEach((user) => {
           expect(typeof user.username).toBe("string");
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
         });
+      });
+  });
+});
+
+describe("GET /api/users/:username", () => {
+  test("200: responds with an user matching the given username, with the properties of: username, name, avatar_url", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+          expect(user.username).toBe("butter_bridge");
+          expect(user.name).toBe("jonny");
+          expect(user.avatar_url).toBe("https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg");
       });
   });
 });

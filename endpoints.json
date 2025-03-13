@@ -112,5 +112,16 @@
         "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
       }
     ]
+  },
+  "GET /api/users/:username": {
+    "description": "serves a single user matching the passed in username",
+    "queries": ["string"],
+    "exampleResponse": [
+      {
+        "username": "stacey-dooly-and-the-lockdown-babies",
+        "name": "tony",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    ]
   }
 }

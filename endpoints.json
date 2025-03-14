@@ -1,122 +1,154 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Serves up a JSON representation of all available endpoints of the API."
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
+    "description": "Returns an array of all topics.",
+
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
-  "GET /api/articles": {
-    "description": "serves an array of all articles sorted by date, and in descending order by default, additionally can take a topic value and filter article by topic",
-    "queries": ["?sort_by=VALUE", "?order=VALUES", "?topic=VALUE"],
+  "POST /api/topics": {
+    "description": "Creates a new topic",
+    "request_body": {
+      "slug": "string (required)",
+      "description": "string (required)"
+    },
     "exampleResponse": {
-      "articles": [
-        {
-          "article_id": 3,
-          "title": "Eight pug gifs that remind me of mitch",
-          "author": "icellusedkars",
-          "topic": "mitch",
-          "created_at": "2020-11-03T09:12:00.000Z",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 2
-        }
-      ]
+      "topics": [{ "slug": "programming", "description": "computers and stuff?" }]
     }
   },
-  "GET /api/articles/:article_id": {
-    "description": "serves a single article matching the passed in article id, and includes a comment count",
-    "queries": ["Int"],
+  "GET /api/articles": {
+    "description": "Returns an array of all articles sorted by date in descending order by default. Supports filtering by topic.",
+    "queries": ["sort_by=VALUE", "order=VALUE", "topic=VALUE"],
     "exampleResponse": {
       "articles": [
         {
-          "author": "weegembump",
-          "title": "Seafood substitutions are increasing",
-          "article_id": "4",
-          "body": "Text from the article..",
-          "topic": "cooking",
-          "created_at": "2018-05-30T15:59:13.341Z",
+          "article_id": 14,
+          "author": "icellusedkars",
+          "title": "Why am I so hungy?",
+          "body": "my hunger does not define me",
+          "topic": "cats",
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "created_at": "2020-11-03T09:12:00.000Z",
           "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?w=700&h=700",
           "comment_count": 0
         }
       ]
     }
   },
-  "PATCH /api/articles/:article_id": {
-    "description": "updates the vote count of an article matching the passed in article id",
-    "queries": ["Int"],
-    "exampleBody": { "inc_votes": "Int" },
+  "POST /api/articles": {
+    "description": "Adds a new article.",
+    "request_body": {
+      "author": "string (required)",
+      "title": "string (required)",
+      "body": "string (required)",
+      "topic": "string (required)",
+      "article_img_url": "string (optional, defaults to a placeholder)"
+    },
+    "response": {
+      "article_id": "integer",
+      "author": "string",
+      "title": "string",
+      "body": "string",
+      "topic": "string",
+      "article_img_url": "string",
+      "votes": "integer (defaults to 0)",
+      "created_at": "timestamp",
+      "comment_count": "integer"
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "Returns a single article matching the given article_id, including a comment count.",
+    "queries": ["article_id (integer)"],
     "exampleResponse": {
-      "articles": [
-        {
-          "author": "weegembump",
-          "title": "Seafood substitutions are increasing",
-          "article_id": "4",
-          "body": "Text from the article..",
-          "topic": "cooking",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 9,
-          "article_img_url": "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?w=700&h=700"
-        }
-      ]
+      "article": {
+        "author": "weegembump",
+        "title": "Seafood substitutions are increasing",
+        "article_id": 4,
+        "body": "Text from the article..",
+        "topic": "cooking",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?w=700&h=700",
+        "comment_count": 0
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the vote count of an article matching the given article_id.",
+    "request_body": { "inc_votes": "integer" },
+    "response": {
+      "article_id": "integer",
+      "votes": "integer"
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 4,
+        "votes": 9
+      }
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of all comments matching the passed in article id",
-    "queries": ["Int"],
+    "description": "Returns an array of comments for the given article_id.",
+    "queries": ["article_id (integer)"],
     "exampleResponse": {
       "comments": [
         {
-          "comment_id": "3",
+          "comment_id": 3,
           "votes": 0,
           "created_at": "2018-05-30T15:59:13.341Z",
           "author": "weegembump",
           "body": "Text from the article..",
-          "article_id": "4"
+          "article_id": 4
         }
       ]
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "adds a comment to the article matching the passed in article id",
-    "exampleBody": { "username": "string", "body": "string" },
+    "description": "Adds a comment to the article matching the given article_id.",
+    "request_body": { "username": "string", "body": "string" },
+    "response": {
+      "comment_id": "integer",
+      "article_id": "integer",
+      "body": "string",
+      "votes": "integer",
+      "author": "string",
+      "created_at": "timestamp"
+    },
     "exampleResponse": {
-      "comment": [
-        {
-          "comment_id": 19,
-          "article_id": 3,
-          "body": "You shall not parse!",
-          "votes": 0,
-          "author": "grandalf_the_tired",
-          "created_at": "2025-03-11T12:32:44.086Z"
-        }
-      ]
+      "comment": {
+        "comment_id": 19,
+        "article_id": 3,
+        "body": "You shall not parse!",
+        "votes": 0,
+        "author": "grandalf_the_tired",
+        "created_at": "2025-03-11T12:32:44.086Z"
+      }
     }
   },
-  "PATCH/api/comments/:comment_id": {
-    "description": "updates the vote count of a comment matching the passed in comment_id",
-    "queries": ["Int"],
-    "exampleBody": { "inc_votes": "Int" },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Updates the vote count of a comment matching the given comment_id.",
+    "request_body": { "inc_votes": "integer" },
     "exampleResponse": {
-      "comment_id": 19,
-      "article_id": 3,
-      "body": "You shall not parse!",
-      "votes": 1,
-      "author": "grandalf_the_tired",
-      "created_at": "2025-03-11T12:32:44.086Z"
+      "comment": {
+        "comment_id": 19,
+        "article_id": 3,
+        "body": "You shall not parse!",
+        "votes": 1,
+        "author": "grandalf_the_tired",
+        "created_at": "2025-03-11T12:32:44.086Z"
+      }
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "deletes a comment matching the passed in comment id",
-    "queries": ["Int"],
+    "description": "Deletes a comment matching the given comment_id.",
+    "queries": ["comment_id (integer)"],
     "exampleResponse": {}
   },
   "GET /api/users": {
-    "description": "serves an array of all users",
+    "description": "Returns an array of all users.",
     "queries": [],
     "exampleResponse": [
       {
@@ -127,14 +159,14 @@
     ]
   },
   "GET /api/users/:username": {
-    "description": "serves a single user matching the passed in username",
-    "queries": ["string"],
-    "exampleResponse": [
-      {
+    "description": "Returns a single user matching the given username.",
+    "queries": ["username (string)"],
+    "exampleResponse": {
+      "user": {
         "username": "stacey-dooly-and-the-lockdown-babies",
         "name": "tony",
         "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
       }
-    ]
+    }
   }
 }

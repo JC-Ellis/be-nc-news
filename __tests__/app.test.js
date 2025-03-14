@@ -336,13 +336,84 @@ describe("PATCH api/comments/:comment_id", () => {
       inc_votes: -1,
     };
     return request(app)
-    .patch("/api/comments/2")
-    .send(newVotes)
-    .expect(200)
-    .then(({ body }) => {
-      const comment = body.comment;
-      expect(comment.votes).toBe(13);
-      expect(comment.comment_id).toBe(2);
-    });
+      .patch("/api/comments/2")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.votes).toBe(13);
+        expect(comment.comment_id).toBe(2);
+      });
+  });
 });
+describe("POST api/articles/", () => {
+  test("201: responds with the newly posted article", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "Why am I so hungy?",
+      body: "my hunger does not define me",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles/")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.article_id).toBe(14);
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("Why am I so hungy?");
+        expect(article.body).toBe("my hunger does not define me");
+        expect(article.topic).toBe("cats");
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(typeof article.comment_count).toBe("string");
+        expect(typeof article.votes).toBe("number");
+        expect(typeof article.created_at).toBe("string");
+      });
+  });
+  test("201: Responds with the newly posted article. If article_img_url is not provided, it defaults to a predefined value.", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "Why am I so hungy?",
+      body: "my hunger does not define me",
+      topic: "cats"
+    };
+    return request(app)
+      .post("/api/articles/")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.article_id).toBe(14);
+        expect(article.author).toBe("icellusedkars");
+        expect(article.title).toBe("Why am I so hungy?");
+        expect(article.body).toBe("my hunger does not define me");
+        expect(article.topic).toBe("cats");
+        expect(article.article_img_url).toBe("no image added");
+        expect(typeof article.comment_count).toBe("string");
+        expect(typeof article.votes).toBe("number");
+        expect(typeof article.created_at).toBe("string");
+      });
+  });
 });
+describe("POST api/topics/", () => {
+  test("201: responds with the newly posted topic", () => {
+    const newTopic = {
+      slug: "programming",
+      description: "computers and stuff?",
+    };
+    return request(app)
+      .post("/api/topics/")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic.slug).toBe("programming");
+        expect(topic.description).toBe("computers and stuff?");
+      });
+  });
+})

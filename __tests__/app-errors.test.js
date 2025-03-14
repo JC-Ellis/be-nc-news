@@ -181,84 +181,122 @@ describe("GET ERROR: /api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () =>
   });
 });
 describe("GET ERROR: /api/users/:username", () => {
-    test("404: responds with not found if username doesn't exist", () => {
-      return request(app)
-        .get("/api/users/toni-ravioli")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("not found");
-        });
-    });
-})
+  test("404: responds with not found if username doesn't exist", () => {
+    return request(app)
+      .get("/api/users/toni-ravioli")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+});
 describe("PATCH ERROR: api/comments/:comment_id", () => {
-    test("404: responds with not found if comment_id doesn't exist", () => {
-      const newVotes = {
-        inc_votes: 9,
-      };
+  test("404: responds with not found if comment_id doesn't exist", () => {
+    const newVotes = {
+      inc_votes: 9,
+    };
+    return request(app)
+      .patch("/api/comments/999999")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment not found");
+      });
+  });
+  test("400: responds with bad request if passed in comment_id is not a number", () => {
+    const newVotes = {
+      inc_votes: 9,
+    };
+    return request(app)
+      .patch("/api/comments/thereisnoescape")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds with bad request if inc_votes key is not a number", () => {
+    const newVotes = {
+      inc_votes: "it-is-a-banana",
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+describe("POST ERROR: /api/articles", () => {
+  test("404: responds with bad request if required field is empty", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "",
+      body: "my hunger does not define me",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles/")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Error: required field missing");
+      });
+  });
+});
+describe("POST ERROR: /api/topics", () => {
+  test("404: responds with bad request if required field is empty", () => {
+    const newTopic = {
+      slug: "socks",
+      title: "",
+    };
+    return request(app)
+      .post("/api/topics/")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Error: required field missing");
+      });
+  });
+});
+describe("DELETE ERROR: /api/comments/:comment_id", () => {
+  test("404: responds with an error message when trying to delete a non-existent comment", () => {
+    return request(app)
+      .delete("/api/comments/999999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "comment not found" });
+      });
+  });
+
+  test("400: responds with an error message for an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/notanotherbanana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "bad request" });
+      });
+  });
+});
+describe("DELETE ERROR: /api/article/article_id", () => {
+    test("404: responds with an error message when trying to delete a non-existent comment", () => {
       return request(app)
-        .patch("/api/comments/999999")
-        .send(newVotes)
+        .delete("/api/articles/999999")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("comment not found");
+          expect(body).toEqual({ msg: "article not found" });
         });
     });
-    test("400: responds with bad request if passed in comment_id is not a number", () => {
-      const newVotes = {
-        inc_votes: 9,
-      };
+  
+    test("400: responds with an error message for an invalid comment_id", () => {
       return request(app)
-        .patch("/api/comments/thereisnoescape")
-        .send(newVotes)
+        .delete("/api/articles/notanotherbanana")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
-        });
-    });
-    test("400: responds with bad request if inc_votes key is not a number", () => {
-      const newVotes = {
-        inc_votes: "it-is-a-banana",
-      };
-      return request(app)
-        .patch("/api/comments/2")
-        .send(newVotes)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
-        });
-    });
-  });
-  describe("POST ERROR: /api/articles", () => {
-    test("404: responds with bad request if required field is empty", () => {
-      const newArticle = {
-        author: "icellusedkars",
-        title: "",
-        body: "my hunger does not define me",
-        topic: "cats",
-        article_img_url:
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      };
-      return request(app)
-        .post("/api/articles/")
-        .send(newArticle)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Error: required field missing");
-        });
-    });
-  });
-  describe("POST ERROR: /api/topics", () => {
-    test("404: responds with bad request if required field is empty", () => {
-      const newTopic = {
-        slug: "socks",
-        title: "",
-      };
-      return request(app)
-        .post("/api/topics/")
-        .send(newTopic)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Error: required field missing");
+          expect(body).toEqual({ msg: "bad request" });
         });
     });
   });

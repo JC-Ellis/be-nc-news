@@ -201,7 +201,7 @@ describe("PATCH api/articles/:article_id", () => {
   });
 });
 describe("DELETE api/comments/:comment_id", () => {
-  test("204: deletes comment based on chosen comment id, and responds with a message confirming what has been deleted", () => {
+  test("204: deletes comment based on chosen comment id", () => {
     return request(app)
       .delete("/api/comments/6")
       .expect(204)
@@ -241,7 +241,7 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
-describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
+describe("GET /api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
   describe("/api/articles/ with with one added query", () => {
     test("200: responds with array of articles sorted by input parameter, in descending order by default", () => {
       return request(app)
@@ -284,7 +284,7 @@ describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
         });
     });
   });
-  describe("/api/articles/ with with two added queries", () => {
+  describe("GET /api/articles/ with with two added queries", () => {
     test("200: responds with an array of all articles, sorted by given input, in ascending order", () => {
       return request(app)
         .get("/api/articles?sort_by=author&order=asc")
@@ -296,7 +296,7 @@ describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
     });
   });
 });
-describe("/api/articles/ with with three added queries", () => {
+describe("GET /api/articles/ with with three added queries", () => {
   test("200: responds with array of articles filtered by topic, and sorted by author in ascending order", () => {
     return request(app)
       .get("/api/articles?sort_by=author&order=asc&topic=mitch")
@@ -380,7 +380,7 @@ describe("POST api/articles/", () => {
       author: "icellusedkars",
       title: "Why am I so hungy?",
       body: "my hunger does not define me",
-      topic: "cats"
+      topic: "cats",
     };
     return request(app)
       .post("/api/articles/")
@@ -416,4 +416,14 @@ describe("POST api/topics/", () => {
         expect(topic.description).toBe("computers and stuff?");
       });
   });
-})
+});
+describe("DELETE api/articles/:article_id", () => {
+  test("204: deletes article based on chosen article id", () => {
+    return request(app)
+      .delete("/api/articles/6")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+});

@@ -16,7 +16,9 @@
       "description": "string (required)"
     },
     "exampleResponse": {
-      "topics": [{ "slug": "programming", "description": "computers and stuff?" }]
+      "topics": [
+        { "slug": "programming", "description": "computers and stuff?" }
+      ]
     }
   },
   "GET /api/articles": {
@@ -90,6 +92,13 @@
       }
     }
   },
+
+  "DELETE /api/articles/:article_id": {
+    "description": "Removes an article matching the given article_id.",
+    "queries": ["article_id (integer)"],
+    "response": {}
+  },
+
   "GET /api/articles/:article_id/comments": {
     "description": "Returns an array of comments for the given article_id.",
     "queries": ["article_id (integer)"],

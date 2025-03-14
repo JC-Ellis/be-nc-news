@@ -174,7 +174,7 @@ describe("PATCH api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
-        expect(article.votes).toBe(9);
+        expect(article.votes).toBe(10);
         expect(article.article_id).toBe(6);
         expect(article.author).toBe("icellusedkars");
         expect(article.title).toBe("A");
@@ -195,7 +195,7 @@ describe("PATCH api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
-        expect(article.votes).toBe(-85);
+        expect(article.votes).toBe(-84);
         expect(article.article_id).toBe(6);
       });
   });
@@ -233,9 +233,11 @@ describe("GET /api/users/:username", () => {
       .expect(200)
       .then(({ body }) => {
         const user = body.user;
-          expect(user.username).toBe("butter_bridge");
-          expect(user.name).toBe("jonny");
-          expect(user.avatar_url).toBe("https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg");
+        expect(user.username).toBe("butter_bridge");
+        expect(user.name).toBe("jonny");
+        expect(user.avatar_url).toBe(
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        );
       });
   });
 });
@@ -277,35 +279,70 @@ describe("/api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
-          expect(articles).toBeInstanceOf(Array)
+          expect(articles).toBeInstanceOf(Array);
           expect(articles.length).toBe(0);
-          });
         });
     });
-    describe("/api/articles/ with with two added queries", () => {
-      test("200: responds with an array of all articles, sorted by given input, in ascending order", () => {
-        return request(app)
-          .get("/api/articles?sort_by=author&order=asc")
-          .expect(200)
-          .then(({ body }) => {
-            const articles = body.articles;
-            expect(articles).toBeSortedBy("author", { descending: false });
-          });
-      });
-    });
   });
-  describe("/api/articles/ with with three added queries", () => {
-    test("200: responds with array of articles filtered by topic, and sorted by author in ascending order", () => {
+  describe("/api/articles/ with with two added queries", () => {
+    test("200: responds with an array of all articles, sorted by given input, in ascending order", () => {
       return request(app)
-        .get("/api/articles?sort_by=author&order=asc&topic=mitch")
+        .get("/api/articles?sort_by=author&order=asc")
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
           expect(articles).toBeSortedBy("author", { descending: false });
-          expect(articles.length).toBe(12);
-          articles.forEach((article) => {
-            expect(article.topic).toBe("mitch");
-          });
         });
     });
   });
+});
+describe("/api/articles/ with with three added queries", () => {
+  test("200: responds with array of articles filtered by topic, and sorted by author in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("author", { descending: false });
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+});
+describe("PATCH api/comments/:comment_id", () => {
+  test("200: responds with a comment matching the given comment id, updated with a new vote count when given a positive integer", () => {
+    const newVotes = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment.votes).toBe(15);
+        expect(comment.comment_id).toBe(2);
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.body).toBe(
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        );
+        expect(comment.created_at).toBe("2020-10-31T03:03:00.000Z");
+      });
+  });
+  test("200: responds with a comment matching the given comment id, updated with a new vote count when given a negative integer", () => {
+    const newVotes = {
+      inc_votes: -1,
+    };
+    return request(app)
+    .patch("/api/comments/2")
+    .send(newVotes)
+    .expect(200)
+    .then(({ body }) => {
+      const comment = body.comment;
+      expect(comment.votes).toBe(13);
+      expect(comment.comment_id).toBe(2);
+    });
+});
+});

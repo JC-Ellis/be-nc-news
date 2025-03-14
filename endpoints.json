@@ -97,6 +97,19 @@
       ]
     }
   },
+  "PATCH/api/comments/:comment_id": {
+    "description": "updates the vote count of a comment matching the passed in comment_id",
+    "queries": ["Int"],
+    "exampleBody": { "inc_votes": "Int" },
+    "exampleResponse": {
+      "comment_id": 19,
+      "article_id": 3,
+      "body": "You shall not parse!",
+      "votes": 1,
+      "author": "grandalf_the_tired",
+      "created_at": "2025-03-11T12:32:44.086Z"
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment matching the passed in comment id",
     "queries": ["Int"],

@@ -146,7 +146,7 @@ describe("PATCH ERROR: api/articles/:article_id/", () => {
       inc_votes: "it-is-a-banana",
     };
     return request(app)
-      .patch("/api/articles/whydowedothistoourselves")
+      .patch("/api/articles/2")
       .send(newVotes)
       .expect(400)
       .then(({ body }) => {
@@ -190,3 +190,41 @@ describe("GET ERROR: /api/users/:username", () => {
         });
     });
 })
+describe("PATCH ERROR: api/comments/:comment_id", () => {
+    test("404: responds with not found if comment_id doesn't exist", () => {
+      const newVotes = {
+        inc_votes: 9,
+      };
+      return request(app)
+        .patch("/api/comments/999999")
+        .send(newVotes)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+    test("400: responds with bad request if passed in comment_id is not a number", () => {
+      const newVotes = {
+        inc_votes: 9,
+      };
+      return request(app)
+        .patch("/api/comments/thereisnoescape")
+        .send(newVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: responds with bad request if inc_votes key is not a number", () => {
+      const newVotes = {
+        inc_votes: "it-is-a-banana",
+      };
+      return request(app)
+        .patch("/api/comments/2")
+        .send(newVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });

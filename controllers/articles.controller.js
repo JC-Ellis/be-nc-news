@@ -8,10 +8,10 @@ const {
 const { checkTopicExists } = require("../models/topics.models");
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
+  const { sort_by, order, topic, limit, p } = req.query;
   const promises = [
     checkTopicExists(topic),
-    fetchAllArticles(sort_by, order, topic),
+    fetchAllArticles(sort_by, order, topic, limit, p),
   ];
   Promise.all(promises)
     .then(([_, articles]) => res.status(200).send({ articles }))

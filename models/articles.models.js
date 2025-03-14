@@ -1,12 +1,14 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = (sortBy, orderBy, topic) => {
+exports.fetchAllArticles = (sortBy, orderBy, topic, limit = 10, page = 1) => {
   const allowedSortInputs = ["title", "author", "votes", "created_at"];
   const allowedOrderInputs = ["ASC", "DESC"];
   let queryString = `
         SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
         COUNT(c.comment_id) 
-        AS comment_count 
+        AS comment_count, 
+        COUNT(a.article_id) OVER()
+        AS total_count 
         FROM articles a 
         LEFT JOIN comments c 
         ON a.article_id = c.article_id `;
@@ -30,10 +32,13 @@ exports.fetchAllArticles = (sortBy, orderBy, topic) => {
     if (!allowedOrderInputs.includes(orderBy.toUpperCase())) {
       return Promise.reject({ status: 400, msg: "bad request" });
     }
-    queryString += `${orderBy.toUpperCase()}`;
+    queryString += `${orderBy.toUpperCase()} `;
   } else {
-    queryString += `DESC`;
+    queryString += `DESC `;
   }
+
+    queryString += `LIMIT ${limit} OFFSET ${limit} * (${page} -1)`
+    
   return db.query(queryString, filterBy).then(({ rows }) => {
     return rows;
   });

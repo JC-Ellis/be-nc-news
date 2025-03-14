@@ -80,7 +80,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
           expect(typeof article.title).toBe("string");
@@ -267,7 +267,7 @@ describe("GET /api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.articles;
-          expect(articles.length).toBe(12);
+          expect(articles.length).toBe(10);
           articles.forEach((article) => {
             expect(article.topic).toBe("mitch");
           });
@@ -304,7 +304,7 @@ describe("GET /api/articles/ with with three added queries", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toBeSortedBy("author", { descending: false });
-        expect(articles.length).toBe(12);
+        expect(articles.length).toBe(10);
         articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -370,8 +370,8 @@ describe("POST api/articles/", () => {
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
-        expect(typeof article.comment_count).toBe("string");
-        expect(typeof article.votes).toBe("number");
+        expect(article.comment_count).toBe("0");
+        expect(article.votes).toBe(0);
         expect(typeof article.created_at).toBe("string");
       });
   });
@@ -424,6 +424,28 @@ describe("DELETE api/articles/:article_id", () => {
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
+      });
+  });
+});
+describe("GET /api/articles/ with pagination", () => {
+  test("200: responds with an array of all articles, with a set limit, and a count of all articles", () => {
+    return request(app)
+      .get("/api/articles?limit=8")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(8);
+        expect(articles[0].total_count).toBe("13");
+      });
+  });
+  test("200: responds with an array of all articles, with a set limit, starting from the second set of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=4&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(4);
+        expect(articles[0].article_id).toBe(13);
       });
   });
 });

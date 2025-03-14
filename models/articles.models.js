@@ -41,7 +41,8 @@ exports.fetchAllArticles = (sortBy, orderBy, topic) => {
 
 exports.fetchArticleById = (article_id) => {
   return db
-    .query(`
+    .query(
+      `
         SELECT a.*, 
         COUNT(c.comment_id) 
         AS comment_count 
@@ -76,14 +77,39 @@ exports.checkArticleExists = (article_id) => {
 
 exports.updateArticleVotes = (article_id, inc_votes) => {
   return db
-    .query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [
-      inc_votes,
-      article_id,
-    ])
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [inc_votes, article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
+      return rows[0];
+    });
+};
+exports.addNewArticle = (author, title, body, topic, article_img_url = "no image added") => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({
+      status: 400,
+      msg: "Error: required field missing",
+    });
+  }
+  return db
+    .query(
+      `WITH inserted_article AS (
+            INSERT INTO articles (author, title, body, topic, article_img_url)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *)
+        SELECT a.*, 
+            COUNT(c.comment_id) AS comment_count 
+            FROM inserted_article a
+            LEFT JOIN comments c 
+            ON a.article_id = c.article_id
+            GROUP BY a.title, a.topic, a.author, a.body, a.article_img_url, a.votes, a.created_at, a.article_id;`,
+      [author, title, body, topic, article_img_url]
+    )
+    .then(({ rows }) => {
       return rows[0];
     });
 };

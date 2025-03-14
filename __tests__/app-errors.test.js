@@ -42,7 +42,7 @@ describe("GET ERROR: /api/articles/:article_id", () => {
   });
 });
 
-describe("GET ERROR: api/articles/:article_id/comments", () => {
+describe("GET ERROR: /api/articles/:article_id/comments", () => {
   test("404: responds with not found if article_id doesn't exist", () => {
     return request(app)
       .get("/api/articles/999999/comments")
@@ -61,7 +61,7 @@ describe("GET ERROR: api/articles/:article_id/comments", () => {
   });
 });
 
-describe("POST ERROR: api/articles/:article_id/comments", () => {
+describe("POST ERROR: /api/articles/:article_id/comments", () => {
   test("404: responds with not found if article_id doesn't exist", () => {
     const newComment = {
       username: "lurker",
@@ -101,7 +101,7 @@ describe("POST ERROR: api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-  test("400: responds with not found if username doesn't exist", () => {
+  test("400: responds with not found if comment body isn't given", () => {
     const newComment = {
       username: "lurker",
       body: "",
@@ -116,7 +116,7 @@ describe("POST ERROR: api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH ERROR: api/articles/:article_id/", () => {
+describe("PATCH ERROR: /api/articles/:article_id/", () => {
   test("404: responds with not found if article_id doesn't exist", () => {
     const newVotes = {
       inc_votes: 9,
@@ -154,7 +154,7 @@ describe("PATCH ERROR: api/articles/:article_id/", () => {
       });
   });
 });
-describe("GET ERROR: api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
+describe("GET ERROR: /api/articles?sort_by=VALUE&order=VALUE&topic=VALUE", () => {
   test("400: responds with bad request if sort_by VALUE isn't allowed", () => {
     return request(app)
       .get("/api/articles?sort_by=user_review")
@@ -225,6 +225,40 @@ describe("PATCH ERROR: api/comments/:comment_id", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+  describe("POST ERROR: /api/articles", () => {
+    test("404: responds with bad request if required field is empty", () => {
+      const newArticle = {
+        author: "icellusedkars",
+        title: "",
+        body: "my hunger does not define me",
+        topic: "cats",
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      };
+      return request(app)
+        .post("/api/articles/")
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Error: required field missing");
+        });
+    });
+  });
+  describe("POST ERROR: /api/topics", () => {
+    test("404: responds with bad request if required field is empty", () => {
+      const newTopic = {
+        slug: "socks",
+        title: "",
+      };
+      return request(app)
+        .post("/api/topics/")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Error: required field missing");
         });
     });
   });

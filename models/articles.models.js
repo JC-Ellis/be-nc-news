@@ -1,44 +1,35 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = (sortBy, orderBy, topic, limit = 10, page = 1) => {
+exports.fetchAllArticles = (sortBy = "created_at", orderBy = "DESC", topic, limit = 10, page = 1) => {
   const allowedSortInputs = ["title", "author", "votes", "created_at"];
   const allowedOrderInputs = ["ASC", "DESC"];
   let queryString = `
-        SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
-        COUNT(c.comment_id) 
-        AS comment_count, 
-        COUNT(a.article_id) OVER()
-        AS total_count 
-        FROM articles a 
-        LEFT JOIN comments c 
-        ON a.article_id = c.article_id `;
+  SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
+  COUNT(c.comment_id) 
+  AS comment_count, 
+  COUNT(a.article_id) OVER()
+  AS total_count 
+  FROM articles a 
+  LEFT JOIN comments c 
+  ON a.article_id = c.article_id `;
 
   let filterBy = [];
+  filterBy.push(limit, page);
 
   if (topic) {
     filterBy.push(topic);
-    queryString += `WHERE topic = $1 `;
-  }
-  if (sortBy) {
-    if (!allowedSortInputs.includes(sortBy)) {
-      return Promise.reject({ status: 400, msg: "bad request" });
-    }
-    queryString += `GROUP BY a.article_id ORDER BY a.${sortBy} `;
-  } else {
-    queryString += `GROUP BY a.article_id ORDER BY a.created_at `;
+    queryString += `WHERE topic = $3 `;
   }
 
-  if (orderBy) {
-    if (!allowedOrderInputs.includes(orderBy.toUpperCase())) {
-      return Promise.reject({ status: 400, msg: "bad request" });
-    }
-    queryString += `${orderBy.toUpperCase()} `;
-  } else {
-    queryString += `DESC `;
+  if (
+    !allowedSortInputs.includes(sortBy) ||
+    !allowedOrderInputs.includes(orderBy.toUpperCase())
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
   }
 
-    queryString += `LIMIT ${limit} OFFSET ${limit} * (${page} -1)`
-    
+  queryString += `GROUP BY a.article_id ORDER BY a.${sortBy} ${orderBy.toUpperCase()} LIMIT $1 OFFSET $1 * ($2 -1)`;
+
   return db.query(queryString, filterBy).then(({ rows }) => {
     return rows;
   });
@@ -93,7 +84,13 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
       return rows[0];
     });
 };
-exports.addNewArticle = (author, title, body, topic, article_img_url = "no image added") => {
+exports.addNewArticle = (
+  author,
+  title,
+  body,
+  topic,
+  article_img_url = "no image added"
+) => {
   if (!author || !title || !body || !topic) {
     return Promise.reject({
       status: 400,
@@ -119,13 +116,13 @@ exports.addNewArticle = (author, title, body, topic, article_img_url = "no image
     });
 };
 exports.removeArticleById = (article_id) => {
-    return db
-      .query(`DELETE FROM articles WHERE article_id = $1 RETURNING *`, [
-        article_id,
-      ])
-      .then(({ rows }) => {
-        if (rows.length === 0) {
-          return Promise.reject({ status: 404, msg: "article not found" });
-        }
-      });
-  };
+  return db
+    .query(`DELETE FROM articles WHERE article_id = $1 RETURNING *`, [
+      article_id,
+    ])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
+    });
+};

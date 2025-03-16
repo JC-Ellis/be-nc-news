@@ -1,10 +1,10 @@
 const db = require("../db/connection");
 
-exports.fetchCommentsByArticleId = (article_id) => {
+exports.fetchCommentsByArticleId = (article_id, limit = 10, p = 1) => {
   return db
     .query(
-      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
-      [article_id]
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $2 * ($3 -1)`,
+      [article_id, limit, p]
     )
     .then(({ rows }) => {
       return rows;
@@ -42,10 +42,10 @@ exports.removeCommentByCommentId = (comment_id) => {
 };
 exports.updateCommentVotes = (comment_id, inc_votes) => {
   return db
-    .query(`UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`, [
-      inc_votes,
-      comment_id,
-    ])
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
+      [inc_votes, comment_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "comment not found" });

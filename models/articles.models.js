@@ -9,6 +9,15 @@ exports.fetchAllArticles = (
 ) => {
   const allowedSortInputs = ["title", "author", "votes", "created_at"];
   const allowedOrderInputs = ["ASC", "DESC"];
+
+  if (
+    !allowedSortInputs.includes(sortBy) ||
+    !allowedOrderInputs.includes(orderBy.toUpperCase()) ||
+    limit < 0
+  ) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
   let queryString = `
   SELECT a.article_id, a.title, a.author, a.topic, a.created_at, a.votes, a.article_img_url, 
   COUNT(c.comment_id) 
@@ -25,13 +34,6 @@ exports.fetchAllArticles = (
   if (topic) {
     filterBy.push(topic);
     queryString += `WHERE topic = $3 `;
-  }
-
-  if (
-    !allowedSortInputs.includes(sortBy) ||
-    !allowedOrderInputs.includes(orderBy.toUpperCase())
-  ) {
-    return Promise.reject({ status: 400, msg: "bad request" });
   }
 
   queryString += `GROUP BY a.article_id ORDER BY a.${sortBy} ${orderBy.toUpperCase()} LIMIT $1 OFFSET $1 * ($2 -1)`;

@@ -2,15 +2,16 @@ const {
   fetchCommentsByArticleId,
   addCommentByArticleId,
   removeCommentByCommentId,
-  updateCommentVotes
+  updateCommentVotes,
 } = require("../models/comments.models");
 
 const { checkArticleExists } = require("../models/articles.models");
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const article_id = req.params.article_id;
+  const { limit, p } = req.query;
   const promises = [
-    fetchCommentsByArticleId(article_id),
+    fetchCommentsByArticleId(article_id, limit, p),
     checkArticleExists(article_id),
   ];
   Promise.all(promises)

@@ -428,7 +428,7 @@ describe("DELETE api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles/ with pagination", () => {
-  test("200: responds with an array of all articles, with a set limit, and a count of all articles, starting at the ffirst page by default", () => {
+  test("200: responds with an array of all articles, with a set limit, and a count of all articles, starting at the first page by default", () => {
     return request(app)
       .get("/api/articles?limit=8")
       .expect(200)
@@ -457,7 +457,7 @@ describe("GET /api/articles/ with pagination", () => {
         expect(articles.length).toBe(10);
       });
   });
-  test("200: responds with an array of all articles, with a default limit of 10", () => {
+  test("200: responds with an array of all articles with a topic of mitch, sorted by author, in ascending order with a limit of 3, starting at page 3", () => {
     return request(app)
       .get("/api/articles?sort_by=author&order=asc&topic=mitch&limit=3&p=3")
       .expect(200)
@@ -478,8 +478,43 @@ describe("GET /api/articles/ with pagination", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles).toBeInstanceOf(Array)
+        expect(articles).toBeInstanceOf(Array);
         expect(articles.length).toBe(0);
-        });
       });
   });
+});
+describe("GET /api/articles/article_id/comments with pagination", () => {
+  test("200: responds with an array of comments, filtered by article id, with a set limit, starting at the first page by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=8")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments[0].comment_id).toBe(5);
+        expect(comments.length).toBe(8);
+        comments.forEach((comment) => expect(comment.article_id).toBe(1));
+      });
+  });
+  test("200: responds with an array of comments, filtered by article id, with a set limit, starting from the second page", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=4&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(4);
+        expect(comments[0].comment_id).toBe(7);
+        comments.forEach((comment) => expect(comment.article_id).toBe(1));
+      });
+  });
+  test("200: responds with an array of comments, filtered by article id, with a default limit of 10, starting from the first page", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(10);
+        expect(comments[0].comment_id).toBe(5);
+        comments.forEach((comment) => expect(comment.article_id).toBe(1));
+      });
+  });
+});

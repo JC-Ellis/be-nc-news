@@ -317,4 +317,54 @@ describe("GET ERROR /api/articles/ with pagination", () => {
         expect(body.msg).toBe("bad request");
       });
   });
+  test("400: responds with bad request if limit VALUE is a negative integer", () => {
+    return request(app)
+      .get("/api/articles?limit=-2")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds with bad request if page VALUE is a negative integer", () => {
+    return request(app)
+      .get("/api/articles?p=-4")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+describe("GET ERROR /api/articles/article_id/comments with pagination", () => {
+  test("400: responds with bad request if LIMIT VALUE isn't allowed", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=loads")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds with bad request if page VALUE isn't allowed", () => {
+    return request(app)
+      .get("/api/articles/article_id/comments?p=upways")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds with bad request if limit VALUE is a negative integer", () => {
+    return request(app)
+      .get("/api/articles/article_id/comments?limit=-6")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds with bad request if page VALUE is a negative integer", () => {
+    return request(app)
+      .get("/api/articles/article_id/comments?limit=6&p=-3")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
 });

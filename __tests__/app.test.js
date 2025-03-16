@@ -435,7 +435,9 @@ describe("GET /api/articles/ with pagination", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(8);
-        expect(articles[0].total_count).toBe("13");
+        articles.forEach((article) => 
+        expect(article.total_count).toBe("13")
+      )
       });
   });
   test("200: responds with an array of all articles, with a set limit, starting from the second set of articles", () => {

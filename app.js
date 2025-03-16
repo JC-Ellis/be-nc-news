@@ -8,12 +8,14 @@ const {
   handleCustomErrors,
   handlePsqlErrors,
   handlePostErrors,
+  handleOffsetErrors,
 } = require("./controllers/errors.controllers");
 
 app.use("/api", apiRouter);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
+app.use(handleOffsetErrors);
 app.use(handlePostErrors);
 app.all("*", (req, res, next) => {
   res.status(404).send({ msg: "path not found" });

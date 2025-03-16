@@ -103,19 +103,23 @@
     "queries": ["article_id (integer)"],
     "response": {}
   },
-
   "GET /api/articles/:article_id/comments": {
-    "description": "Returns an array of comments for the given article_id.",
-    "queries": ["article_id (integer)"],
+    "description": "Returns a paginated array of comments for the given article_id.",
+    "queries": [
+      "article_id (integer) - The ID of the article",
+      "limit (integer, optional) - Number of comments per page (default: 10)",
+      "p (integer, optional) - Page number (default: 1)"
+    ],
+    "exampleRequest": "/api/articles/1/comments?limit=4&p=2",
     "exampleResponse": {
       "comments": [
         {
-          "comment_id": 3,
-          "votes": 0,
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "article_id": 4
+          "comment_id": 7,
+          "votes": 2,
+          "created_at": "2018-06-01T12:34:56.789Z",
+          "author": "happyCoder",
+          "body": "This is a comment text.",
+          "article_id": 1
         }
       ]
     }

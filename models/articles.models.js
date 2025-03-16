@@ -1,6 +1,12 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = (sortBy = "created_at", orderBy = "DESC", topic, limit = 10, page = 1) => {
+exports.fetchAllArticles = (
+  sortBy = "created_at",
+  orderBy = "DESC",
+  topic,
+  limit = 10,
+  page = 1
+) => {
   const allowedSortInputs = ["title", "author", "votes", "created_at"];
   const allowedOrderInputs = ["ASC", "DESC"];
   let queryString = `

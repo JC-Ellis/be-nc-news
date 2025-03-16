@@ -15,6 +15,7 @@ exports.checkTopicExists = (topic_id) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "not found" });
       }
+      return true;
     });
 };
 exports.addNewTopic = (slug, description) => {

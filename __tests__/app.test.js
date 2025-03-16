@@ -428,16 +428,14 @@ describe("DELETE api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles/ with pagination", () => {
-  test("200: responds with an array of all articles, with a set limit, and a count of all articles", () => {
+  test("200: responds with an array of all articles, with a set limit, and a count of all articles, starting at the ffirst page by default", () => {
     return request(app)
       .get("/api/articles?limit=8")
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(8);
-        articles.forEach((article) => 
-        expect(article.total_count).toBe("13")
-      )
+        articles.forEach((article) => expect(article.total_count).toBe("13"));
       });
   });
   test("200: responds with an array of all articles, with a set limit, starting from the second set of articles", () => {
@@ -447,7 +445,41 @@ describe("GET /api/articles/ with pagination", () => {
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles.length).toBe(4);
-        expect(articles[0].article_id).toBe(13);
+        articles.forEach((article) => expect(article.total_count).toBe("13"));
       });
   });
-});
+  test("200: responds with an array of all articles, with a default limit of 10", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(10);
+      });
+  });
+  test("200: responds with an array of all articles, with a default limit of 10", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc&topic=mitch&limit=3&p=3")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(3);
+        expect(articles).toBeSortedBy("author", { descending: false });
+        expect(articles[0].article_id).toBe(8);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+          expect(article.total_count).toBe("12");
+        });
+      });
+  });
+  test("200: returns an empty array when given a page exceeding the amount available", () => {
+    return request(app)
+      .get("/api/articles?p=9999999")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeInstanceOf(Array)
+        expect(articles.length).toBe(0);
+        });
+      });
+  });

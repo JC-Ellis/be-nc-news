@@ -7,7 +7,7 @@ exports.fetchAllArticles = (
   limit = 10,
   page = 1
 ) => {
-  const allowedSortInputs = ["title", "author", "votes", "created_at"];
+  const allowedSortInputs = ["title", "author", "votes", "created_at", "comment_count"];
   const allowedOrderInputs = ["ASC", "DESC"];
 
   if (
@@ -36,7 +36,9 @@ exports.fetchAllArticles = (
     queryString += `WHERE topic = $3 `;
   }
 
-  queryString += `GROUP BY a.article_id ORDER BY a.${sortBy} ${orderBy.toUpperCase()} LIMIT $1 OFFSET $1 * ($2 -1)`;
+  queryString += `GROUP BY a.article_id ORDER BY ${
+    sortBy === "comment_count" ? "comment_count" : `a.${sortBy}`
+  } ${orderBy.toUpperCase()} LIMIT $1 OFFSET $1 * ($2 -1)`;
 
   return db.query(queryString, filterBy).then(({ rows }) => {
     return rows;
